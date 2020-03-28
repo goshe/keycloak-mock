@@ -1,5 +1,4 @@
 import { PostFn } from "../types";
-import createBearerToken, {CreateTokenOptions} from "../createBearerToken"
 
 const postToken: PostFn = (instance, request, requestBody) => {
   if (typeof requestBody !== "object") {

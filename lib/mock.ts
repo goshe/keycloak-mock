@@ -3,7 +3,7 @@ import nock, { Scope } from "nock";
 import { ViewFn, PostFn } from "./types";
 import { MockInstance } from "./instance";
 import { decodeTokenAndAttachUser } from "./middlewares";
-import { listCertificates, getUser, getUserInfo, postToken } from "./views";
+import { listCertificates, getUser, getUserInfo, postToken, postUser } from "./views";
 
 let __activeMocks__: Map<string, Mock> = new Map<string, Mock>();
 
@@ -61,8 +61,15 @@ const activateMock = (instance: MockInstance, options?: MockOptions): Mock => {
     })
     .post(`/realms/${realm}/protocol/openid-connect/token`)
     .reply(async function(uri, requestBody) {
+
       return postToken(instance, this.req, requestBody);
-    });
+    }).post(`/realms/${realm}/users`)
+      .reply(async function(uri, requestBody) {
+
+        await decodeTokenAndAttachUser(instance, this.req);
+        
+        return postUser(instance, this.req, requestBody);
+      });
 
   const mock = { scope, instance };
   __activeMocks__.set(authServerURL, mock);
