@@ -10,12 +10,6 @@ const postToken: PostFn = (instance, request, requestBody) => {
     any
   >;
   let clientIdNotMatches = instance.params.clientID !== client_id;
-
-  if(client_secret){
-    username = '';
-    password = ''
-  }
-
   let clientSecretIsNotSet = !client_secret;
   let usernameIsNotSet = !username;
   let passwordIsNotSet = !password;
