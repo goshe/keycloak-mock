@@ -9,6 +9,7 @@ import MockDatabase, {
 export interface CreateMockInstanceOptions {
   authServerURL: string;
   clientID: string;
+  clientSecret: string;
   realm: string;
 
   /**
@@ -21,6 +22,7 @@ export interface CreateMockInstanceOptions {
 export interface MockInstanceParams {
   authServerURL: string;
   clientID: string;
+  clientSecret: string;
   realm: string;
 }
 
@@ -49,11 +51,24 @@ class MockInstance {
   createBearerToken(sub: string, expiresIn: number = 3600): string {
     const user = this.database.findUserByID(sub);
     if (!user) {
-      throw new Error("Cannot create bearer token for non-existen user");
+      throw new Error("Cannot create bearer token for non-existent user");
     }
 
     return createBearerToken({
-      user,
+      type: 'user',
+      sub: user.id,
+      key: this.defaultKey,
+      expiresIn,
+      realm: this.params.realm,
+      clientID: this.params.clientID,
+      authServerURL: this.params.authServerURL,
+    });
+  }
+
+  createClientBearerToken(expiresIn: number = 3600): string {
+    return createBearerToken({
+      type: 'client',
+      sub: this.params.clientID,
       key: this.defaultKey,
       expiresIn,
       realm: this.params.realm,
@@ -74,6 +89,7 @@ const createMockInstance = async (
   return new MockInstance(store, defaultKey, new MockDatabase(), {
     authServerURL: options.authServerURL,
     clientID: options.clientID,
+    clientSecret: options.clientSecret,
     realm: options.realm,
   });
 };

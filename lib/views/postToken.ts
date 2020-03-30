@@ -1,25 +1,47 @@
 import { PostFn } from "../types";
 
+function XOR(a: boolean, b:boolean) {
+  return ( a || b ) && !( a && b );
+}
+
 const postToken: PostFn = (instance, request, requestBody) => {
   if (typeof requestBody !== "object") {
     return [403, "Access denied"];
   }
 
-  const { username, password, client_id } = (requestBody as unknown) as Record<
+  let { username, password, client_id, client_secret } = (requestBody as unknown) as Record<
     string,
     any
   >;
-  if (!username || !password || instance.params.clientID !== client_id) {
+  let clientIdNotMatches = instance.params.clientID !== client_id;
+  let clientSecretIsNotSet = !client_secret;
+  if(instance.params.clientSecret){
+    username = '';
+    password = '';
+  }
+  let usernameIsNotSet = !username;
+  let passwordIsNotSet = !password;
+
+  if ( clientIdNotMatches &&  clientSecretIsNotSet && (usernameIsNotSet && passwordIsNotSet) ) {
     return [403, "Access denied"];
   }
 
-  let user = instance.database.findUserByEmail(username);
-  if (!user || password !== user.password) {
-    return [403, "Access denied"];
-  }
+  let access_token;
+  let refresh_token;
 
-  let access_token = instance.createBearerToken(user.id);
-  let refresh_token = instance.createBearerToken(user.id);
+  if(clientSecretIsNotSet) {
+    let user = instance.database.findUserByEmail(username);
+    if (!user || password !== user.password) {
+      return [403, "Access denied"];
+    }
+
+    access_token = instance.createBearerToken(user.id);
+    refresh_token = instance.createBearerToken(user.id);
+  } else {
+    // we have succesfully auhenticated a client
+    access_token = instance.createClientBearerToken();
+    refresh_token = instance.createClientBearerToken();
+  }
 
   return [
     200,

@@ -3,10 +3,9 @@ import jwt from "jsonwebtoken";
 
 import { JWK } from "node-jose";
 
-import { MockUserProfile } from "./database";
-
 export interface CreateTokenOptions {
-  user: MockUserProfile;
+  type: string;
+  sub: string;
   expiresIn: number;
   key: JWK.Key;
   realm: string;
@@ -20,12 +19,13 @@ const createBearerToken = (options: CreateTokenOptions): string => {
 
   return jwt.sign(
     {
+      type: options.type,
       iss: `${options.authServerURL}/realms/${options.realm}`,
       iat: expiresAt,
       exp: expiresAt,
       nbf: 0,
       typ: "Bearer",
-      sub: options.user.id,
+      sub: options.sub,
       azp: options.clientID,
       session_state: uuidv4(),
     },

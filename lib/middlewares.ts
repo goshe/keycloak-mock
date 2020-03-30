@@ -9,6 +9,7 @@ type DecodedJWTToken = {
   };
   payload: {
     sub: string;
+    type: string;
   };
 };
 
@@ -45,7 +46,9 @@ const decodeTokenAndAttachUser: MiddlewareFn = async (instance, request) => {
     return;
   }
 
-  request.user = instance.database.findUserByID(decodedToken.payload.sub);
+  if(decodedToken.payload.type === "user") {
+    request.user = instance.database.findUserByID(decodedToken.payload.sub);
+  }
 };
 
 export { decodeTokenAndAttachUser };
