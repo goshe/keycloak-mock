@@ -1,9 +1,5 @@
 import { PostFn } from "../types";
 
-function XOR(a: boolean, b:boolean) {
-  return ( a || b ) && !( a && b );
-}
-
 const postToken: PostFn = (instance, request, requestBody) => {
   if (typeof requestBody !== "object") {
     return [403, "Access denied"];
@@ -14,11 +10,13 @@ const postToken: PostFn = (instance, request, requestBody) => {
     any
   >;
   let clientIdNotMatches = instance.params.clientID !== client_id;
-  let clientSecretIsNotSet = !client_secret;
-  if(instance.params.clientSecret){
+
+  if(client_secret){
     username = '';
-    password = '';
+    password = ''
   }
+
+  let clientSecretIsNotSet = !client_secret;
   let usernameIsNotSet = !username;
   let passwordIsNotSet = !password;
 
@@ -38,6 +36,10 @@ const postToken: PostFn = (instance, request, requestBody) => {
     access_token = instance.createBearerToken(user.id);
     refresh_token = instance.createBearerToken(user.id);
   } else {
+
+    if (client_secret !== instance.params.clientSecret) {
+      return [403, "Access denied"];
+    }
     // we have succesfully auhenticated a client
     access_token = instance.createClientBearerToken();
     refresh_token = instance.createClientBearerToken();

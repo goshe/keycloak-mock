@@ -23,6 +23,24 @@ describe("postToken", () => {
     expect(response.status).toBe(403);
   });
 
+    it("rejects with 403 without correct clientSecret", async () => {
+        const kmock = getMockInstance();
+        const url = kmock.createURL(
+            "/realms/myrealm/protocol/openid-connect/token"
+        );
+
+        const response = await axios.post(
+            url,
+            {
+                client_id: "test",
+                client_secret: "doesNotExist"
+
+            },
+            { validateStatus: () => true }
+        );
+        expect(response.status).toBe(403);
+    });
+
     it("rejects with 200 on passing clientId and clientSecret", async () => {
         const kmock = getMockInstance();
         const url = kmock.createURL(
@@ -33,7 +51,7 @@ describe("postToken", () => {
             url,
             {
                 client_id: "test",
-                client_secret: "secret"
+                client_secret: "testClientSecret"
             },
             { validateStatus: () => true }
         );
