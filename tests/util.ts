@@ -5,7 +5,7 @@ const setupBefore = async () => {
     authServerURL: "http://localhost/auth",
     realm: "myrealm",
     clientID: "test",
-    clientSecret: "testClientSecret"
+    clientSecret: "testClientSecret",
   });
 
   KeycloakMock.activateMock(instance);

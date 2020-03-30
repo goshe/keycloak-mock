@@ -46,7 +46,7 @@ const decodeTokenAndAttachUser: MiddlewareFn = async (instance, request) => {
     return;
   }
 
-  if(decodedToken.payload.type === "user") {
+  if (decodedToken.payload.type === "user") {
     request.user = instance.database.findUserByID(decodedToken.payload.sub);
   }
 };

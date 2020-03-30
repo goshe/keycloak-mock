@@ -55,7 +55,7 @@ class MockInstance {
     }
 
     return createBearerToken({
-      type: 'user',
+      type: "user",
       sub: user.id,
       key: this.defaultKey,
       expiresIn,
@@ -67,7 +67,7 @@ class MockInstance {
 
   createClientBearerToken(expiresIn: number = 3600): string {
     return createBearerToken({
-      type: 'client',
+      type: "client",
       sub: this.params.clientID,
       key: this.defaultKey,
       expiresIn,

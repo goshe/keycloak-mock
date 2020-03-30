@@ -31,6 +31,7 @@ export interface MockUserProfile {
   email: string;
   password?: string;
   attributes: MockUserProfileAttributes;
+  realmRoles?: string[];
 }
 
 class MockDatabase {
